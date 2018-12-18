@@ -18,25 +18,36 @@
 
 var inquirer = require("inquirer");
 var mysql = require("mysql");
+var config = require("./config/config.js");
 
-var connection = mysql.createConnection({
-    host: "localhost",
-    port: 8889,
-    user: "root",
-    password: "root",
-    database: "bamazon"
-});
+var connection = mysql.createConnection(config);
 
 connection.connect(function (err) {
     if (err) throw err;
     console.log("connected as id " + connection.threadId + "\n");
     displayItems();
-    // createProduct();
 });
 
-function customerOrder() {
+function customerOrder(order) {
+    console.log("You bought it!");
     // Update the SQL database to reflect the remaining quantity.
     // Once the update goes through, show the customer the total cost of their purchase.
+    connection.query(
+        "UPDATE products SET ? WHERE ?",
+        [
+            {
+                stock_quantity: order.stock -= order.units
+            },
+            {
+                item_id: order.id
+            }
+        ],
+        function (error) {
+            if (error) throw err;
+            console.log("Your items are purchased!");
+            console.log(`TOTAL: $${order.units * order.price}`);
+        }
+    );
 }
 
 // display items
@@ -46,7 +57,7 @@ function displayItems() {
     connection.query("SELECT item_id, product_name, price FROM products", function (err, res) {
         if (err) throw err;
         // Log all results of the SELECT statement
-        console.log(res);
+        console.table(res);
         inquirer
             .prompt([
                 {
@@ -60,32 +71,24 @@ function displayItems() {
                 }
             ]).then(function (inquirerResponse) {
                 if (err) throw err;
-                console.log(inquirerResponse);
-                console.log(inquirerResponse.num_units);
-                console.log(inquirerResponse.item_id);
-                connection.query(`SELECT stock_quantity FROM products WHERE item_id = '${inquirerResponse.item_id}'`, function (err, res) {
+                connection.query(`SELECT * FROM products WHERE item_id = '${inquirerResponse.item_id}'`, function (err, res) {
                     if (err) throw err;
-                    console.log(res);
+                    var order = {
+                        stock: res[0].stock_quantity,
+                        units: inquirerResponse.num_units,
+                        id: inquirerResponse.item_id,
+                        price: res[0].price
+                    }
+                    if (order.stock >= order.units) {
+                        // If your store has enough of the product, you should fulfill the customer's order.
+                        customerOrder(order);
+                    } else {
+                        // Else, log a phrase like Insufficient quantity, and then prevent the order from going through.
+                        return console.log("Insufficient quantity!");
+                        // connection.end();
+                    }
                 })
-                // Once the customer has placed the order, your application should check if your store has enough of the product to meet the customer's request.
-                // If your store does have enough of the product, you should fulfill the customer's order.
 
-                // If not, the app should log a phrase like Insufficient quantity!, and then prevent the order from going through.
-                // console.log("Insufficient quantity!");
-                // connection.end();
-                
-                
-
-                
-                // if (inquirerResponse.num_units > ) {
-
-                // } else {
-                //     var query = connection.query("SELECT * FROM items", function (err, res) {
-                //         if (err) throw err;
-                //         // Log all results of the SELECT statement
-                //         console.log(res);
-                //     })
-                // };
             });
     });
 }
