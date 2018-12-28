@@ -46,6 +46,7 @@ function customerOrder(order) {
             if (error) throw err;
             console.log("Your items are purchased!");
             console.log(`TOTAL: $${order.units * order.price}`);
+            connection.end();
         }
     );
 }
