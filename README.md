@@ -23,3 +23,5 @@ Running the manager app will:
 * If a manager selects View Low Inventory, then it will list all items with an inventory count lower than five.
 * If a manager selects Add to Inventory, the app will display a prompt that will let the manager "add more" of any item currently in the store.
 * If a manager selects Add New Product, it will allow the manager to add a completely new product to the store.
+
+[Link to Demo Video](https://drive.google.com/file/d/1UkH9chXOG8N268CV7CVEnIBuP0J9jql3/view)
