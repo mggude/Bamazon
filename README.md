@@ -15,10 +15,10 @@ Once the customer has placed the order, the app checks if the store has enough o
 ## Bamazon Manager App
 Running the manager app will:
 * List a set of menu options:
-* View Products for Sale
-* View Low Inventory
-* Add to Inventory
-* Add New Product
+    * View Products for Sale
+    * View Low Inventory
+    * Add to Inventory
+    * Add New Product
 * If a manager selects View Products for Sale, the app will list every available item: the item IDs, names, prices, and quantities.
 * If a manager selects View Low Inventory, then it will list all items with an inventory count lower than five.
 * If a manager selects Add to Inventory, the app will display a prompt that will let the manager "add more" of any item currently in the store.
